@@ -8,18 +8,25 @@ on:
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
+        permissions:
+            contents: write # Explicitly grant write permissions for GITHUB_TOKEN
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v3
 
             - name: Configure Git
               run: |
                   git config --global user.name "GitHub Actions"
                   git config --global user.email "actions@github.com"
 
+            - name: Debug permissions
+              run: |
+                  echo "GITHUB_TOKEN is set: ${GITHUB_TOKEN:0:10}..."  # Print first 10 chars of token for debugging (securely)
+                  git remote -v
+
             - name: Deploy to GitHub Pages
               uses: peaceiris/actions-gh-pages@v3
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   publish_dir: ./
-                  publish_branch: gh-pages # Explicitly specify the gh-pages branch
+                  publish_branch: gh-pages
